@@ -1,4 +1,3 @@
-//#include "../../std_lib_facilities.h"
 // Program to test mental arithmetic using given operations with user range and time limit with score.
 using namespace std;
 #include<iostream>
@@ -36,7 +35,6 @@ public:
 	int up() const { return upper; }
 
 
-
 private:
 	int lower{2};//default range: [2,100]
 	int upper{100};
@@ -45,7 +43,6 @@ private:
 class op_range {//stores operation and associated range for left and right num
 
 public:
-
 	//constructors
 	op_range() {}
 
@@ -57,32 +54,17 @@ public:
 	
 	}
 
-
 	operation op() const { return operation; }
 	range lrange() const { return leftrange; }
 	range rrange() const { return rightrange; }
-
-
 
 private:
 	operation operation{operation::plus};
 	range leftrange{range()}; //left and right ranges for left and right operands
 	range rightrange{range()};//default '+', on range (int) [0,1] for both ranges
-
-
-
-
-
 };
 
-
-
 class invalid_num {}; //invalid number class to throw for error.
-
-
-
-
-
 
 
 int get_num() {//takes number given by user. Used for range, time limit, etc.
@@ -104,7 +86,6 @@ int get_num() {//takes number given by user. Used for range, time limit, etc.
 	}
 	
 	return num;
-
 }
 
 
@@ -136,7 +117,6 @@ inline int get_rand(const range& range) {//provides a random number from the giv
 }
 
 
-
 bool get_soln(const int& left,const int& right,const operation& op) {//takes the two operands and gets solution from user, returns true or false depending on correctness.
 
 	
@@ -160,18 +140,11 @@ bool get_soln(const int& left,const int& right,const operation& op) {//takes the
 			break; 
 		default:
 			//do nothing all possible operations captured
-			break;
-
-
-		
-		
+			break;	
 	}
 
 }
 
-
-
- 
 
 bool get_yesno() {//prompts user if they want given operation
 	char ans;
@@ -186,24 +159,21 @@ bool get_yesno() {//prompts user if they want given operation
 				return true;
 				break;
 			case 'n':
-				cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer
+				cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
 				return false;
 				break;
 			default:
 					cout << "Sorry incorrect alphabetic character entered, please try again. \n";
-					cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer
+					cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
 					break;
 			}
 		}
 
 		else {
 			cout << "Sorry non-alphabetical character entered, please try again. \n";
-			cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
 		}
-
 	}
-
-
 }
 
 
@@ -265,7 +235,7 @@ vector<op_range> get_ops() {
 		}
 		else range_div = get_range();
 
-		//must check that the upperbound of leftnum is at integrally divisible by the upperbound of the right num and is nonzero
+		//must check that the upperbound of leftnum is at divisible as an integer by the upperbound of the right num and is nonzero
 		if (int quotient = range_div[0].up() / range_div[1].up() == 0) {
 			cout << "Error, the ceiling of the left hand number must be divisible (and nonzero) by the ceiling of the righthand num. \n"
 				<< "Setting division range to default. \n";
@@ -320,8 +290,6 @@ void minus_op(const range& lrange, const range& rrange) {
 			cout << "Incorrect. Try again. \n";
 		}
 	}
-		
-
 }
 
 
@@ -341,11 +309,6 @@ void multi_op(const range& lrange, const range& rrange) {
 			cout << "Incorrect. Try again. \n";
 		}
 	}
-		
-
-
-
-
 }
 
 void div_op(const range& lrange, const range& rrange) {
@@ -367,15 +330,11 @@ void div_op(const range& lrange, const range& rrange) {
 			cout << "Incorrect. Try again. \n";
 		}
 	}
-
-	
-	
 }
 
 
 
 int main() {
-
 	try{
 		
 		time_t start_time{ time(NULL) };//Will be checked against multiple times, ex. after question is answered
@@ -414,23 +373,19 @@ int main() {
 			case operation::division:
 				div_op(opernums[0].lrange(), opernums[0].rrange());
 				break;
-
-
-
-
 			}
-
 		}
+		
+		cout << "Score is: " << score;
 	}
 	
 	
 
 	catch (invalid_num) {
-		cout << "ERROR! Number not entered. \n";
+		cout << "Error! Bad input entered. \n";
 		return 1;
 	}
 
-	cout << "Score is: " << score;
 
 	
 
