@@ -1,15 +1,22 @@
 // Program to test mental arithmetic using given operations with user range and time limit with score.
-using namespace std;
 #include<iostream>
+#include <fstream>
+#include<sstream>
 #include<string>
 #include<random>
 #include<algorithm>
 #include<vector>
 #include<time.h>
 
+using namespace std;
 
-int score{ 0 };//will be modified by each "operation"_op depending on right or wrong answer
+struct result {
 
+	int score{0};
+	time_t ltime {time(NULL)};
+};
+
+result lresult; //will be modified by each "operation"_op depending on right or wrong answer
 
 enum class operation {
 	plus = 1, minus, product, division
@@ -64,7 +71,28 @@ private:
 	range rightrange{range()};//default '+', on range (int) [0,1] for both ranges
 };
 
-class invalid_num {}; //invalid number class to throw for error.
+//Error handling. Note the following was borrowed from Strouroup's Programming: Principles and Practice using C++
+struct Exit : runtime_error {
+	Exit() : runtime_error("Exit") {}
+};
+
+// error() simply disguises throws:
+inline void error(const string& s)
+{
+	throw runtime_error(s);
+}
+
+inline void error(const string& s, const string& s2)
+{
+	error(s + s2);
+}
+
+inline void error(const string& s, int i)
+{
+	ostringstream os;
+	os << s << ": " << i;
+	error(os.str());
+}
 
 
 int get_num() {//takes number given by user. Used for range, time limit, etc.
@@ -75,7 +103,7 @@ int get_num() {//takes number given by user. Used for range, time limit, etc.
 	while (!cin|| num<0) {//cin must be good() and num has a value that is reasonable ie. >0
 							//keep asking until both are satisfied
 		cin >> num;
-		if (cin.bad()) throw invalid_num{};
+		if (cin.bad()) error("Input to num is bad(). \n");
 		else if (cin.fail()) {
 			cout << "Improper input entered, try again. \n";
 			cin.clear();
@@ -117,6 +145,8 @@ inline int get_rand(const range& range) {//provides a random number from the giv
 }
 
 
+
+//User prompts and input
 bool get_soln(const int& left,const int& right,const operation& op) {//takes the two operands and gets solution from user, returns true or false depending on correctness.
 
 	
@@ -146,7 +176,7 @@ bool get_soln(const int& left,const int& right,const operation& op) {//takes the
 }
 
 
-bool get_yesno() {//prompts user if they want given operation
+bool get_yesno() {//prompts user for a yes or no
 	char ans;
 	while (true) {//keep asking for input until correct format is entered
 		cin.get(ans);
@@ -177,6 +207,8 @@ bool get_yesno() {//prompts user if they want given operation
 }
 
 
+
+//User/default range
 vector<op_range> get_ops() {
 
 	vector<op_range> user_op; //Will place chosen operations by user in this vector
@@ -251,9 +283,12 @@ vector<op_range> get_ops() {
 
 	return user_op;
 }
+//User/default range
 
 
 
+
+//Operations
 void plus_op(const range& lrange, const range& rrange) {
 
 	int left_num = get_rand(lrange); //generating a number in the given range
@@ -262,13 +297,14 @@ void plus_op(const range& lrange, const range& rrange) {
 	while (true) {//keep asking for input until gets question right, check_time prevents going past time limit despite incorrect attempts
 		cout << left_num << '+' << right_num << "? \n";
 		if (get_soln(left_num, right_num, operation::plus)) {
-			cout << "Correct! \n";
-			++score;
+			cout << "Correct! (+1) \n";
+			lresult.score++;
 			break;
 		}
 
 		else {
-			cout << "Incorrect. Try again. \n";
+			cout << "Incorrect (-2). Try again. \n";
+			lresult.score--;
 		}
 	}
 		
@@ -281,13 +317,14 @@ void minus_op(const range& lrange, const range& rrange) {
 	while (true) {
 		cout << left_num << '-' << right_num << "? \n";
 		if (get_soln(left_num, right_num, operation::minus)) {
-			cout << "Correct! \n";
-			++score;
+			cout << "Correct! (+1) \n";
+			lresult.score++;
 			break;
 		}
 
 		else {
-			cout << "Incorrect. Try again. \n";
+			cout << "Incorrect (-2). Try again. \n";
+			lresult.score--;
 		}
 	}
 }
@@ -300,13 +337,14 @@ void multi_op(const range& lrange, const range& rrange) {
 	while (true) {
 		cout << left_num << '*' << right_num << "? \n";
 		if (get_soln(left_num, right_num, operation::product)) {
-			cout << "Correct! \n";
-			++score;
+			cout << "Correct! (+1) \n";
+			lresult.score++;
 			break;
 		}
 
 		else {
-			cout << "Incorrect. Try again. \n";
+			cout << "Incorrect (-2). Try again. \n";
+			lresult.score--;
 		}
 	}
 }
@@ -321,27 +359,55 @@ void div_op(const range& lrange, const range& rrange) {
 	while (true) {
 		cout << left_num << '/' << right_num << "? \n";
 		if (get_soln(left_num, right_num, operation::division)) {
-			cout << "Correct! \n";
-			++score;
+			cout << "Correct! (+1) \n";
+			lresult.score++;
 			break;
 		}
 
 		else {
-			cout << "Incorrect. Try again. \n";
+			cout << "Incorrect (-2). Try again. \n";
+			lresult.score--;
 		}
 	}
 }
+//Operations
 
 
+
+ostream& operator<<(ostream& ost, result r) {
+	//overloading to write to file
+	//data will be stored as follows: ((score), (time)) where score is an integer and time is of the form (Www Mmm dd hh:mm:ss yyyy) followed by a '\n' and terminated with a null character
+
+	char buffer[32];			//since whenever using << on a result it will always be writing to file,
+								// will just take the time at the moment of writing to file with the operator
+	struct tm timeinfo;
+	localtime_s(&timeinfo, &r.ltime);
+	asctime_s(buffer, 32, &timeinfo);
+	buffer[24] == ')'; //asctime's format makes the characters in pos 24 a  '\n'. This breaks formatting if one wants to put a bracket afterwards. Hence changing it to a bracket
+	ost << '(' << r.score << ',' << buffer;
+	return ost;
+
+}
 
 int main() {
 	try{
-		
-		time_t start_time{ time(NULL) };//Will be checked against multiple times, ex. after question is answered
 
-		
-		srand((int)start_time); //Generating random seed for rand() based on current time
-		
+		//search for results file
+		cout << "Do you have a previous results file? \n";
+		string iofile;
+		char ans = 'n'; //will be used to check if the answer to above is yes no for later
+		if (get_yesno()) {
+			ans = 'y';
+			cout << "File name? \n";
+			getline(cin, iofile);
+
+			ifstream ist{ iofile };//do a quick check that the given files can be opened and written to then close. This prevents having a score but being unable to write it in the end.
+			if (!ist) error("Cannot open file for reading! \n");
+
+			ofstream ost{ iofile };
+			if (!ost) error("Cannot open file for writing! \n");
+		}
+	
 		vector<op_range> opernums = get_ops();
 		if (opernums.size() == 0) {
 			cout << "No opertions entered. Closing program. \n";
@@ -350,7 +416,12 @@ int main() {
 
 		cout << "Time limit? (In seconds) \n";
 		int time_limit = get_num();
-	
+
+		
+
+
+		time_t start_time{ time(NULL) };//Will be checked against multiple times, ex. after question is answered
+		srand((int)start_time); //Generating random seed for rand() based on current time
 
 		//main loop to randomly pick what operations to give
 		time_t current_time;
@@ -376,16 +447,25 @@ int main() {
 			}
 		}
 		
-		cout << "Score is: " << score;
+		cout << "Score is: " << lresult.score;
+		lresult.ltime = time(NULL);
+		if (ans == 'y') {
+			ofstream ost{ iofile };
+			if (!ost) error("Cannot open file for writing! File Tampered after entry! \n");
+			ost << lresult; //see << operator overload above for the format of record keeping
+		}
 	}
 	
 	
 
-	catch (invalid_num) {
-		cout << "Error! Bad input entered. \n";
+	catch (runtime_error& e) {
+		cerr << "Runtime error: " << e.what() << "\n";
 		return 1;
 	}
-
+	catch (...) {
+		cerr << "Exception: something went wrong. \n";
+		return 2;
+	}
 
 	
 
