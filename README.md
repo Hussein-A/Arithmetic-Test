@@ -1,7 +1,7 @@
 # Arithmetic-Test
 
 ## Description
-In C++, a program to test and train mental arithmetic in chosen operators (+,-,*,/) and chosen time limit. Operations are on integers only. For each operation user may input desired range for operands. For each question operation is chosen randomly then operands randomly based on given range. Default range for each operation is provided.  Score is recorded and outputed at end of session. No marks taken for incorrect answers.
+In C++, a program to test and train mental arithmetic in chosen operators (+,-,*,/) and chosen time limit. Operations are currently on integers only. For each operation user may input desired range for operands. For each question operation is chosen randomly then operands randomly based on given range. Default range for each operation is provided.  Score is recorded to a results file (if given by user) and outputed at end of session. 1 mark for correct and -2 marks for incorrect answers.
 
 
 ## Motivation
