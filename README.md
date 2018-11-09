@@ -17,9 +17,10 @@ Windows:
 For more specific instructions please click this [link](https://msdn.microsoft.com/en-ca/library/ms235639.aspx).
 
 ## Change Log
-*1.1.0
+* 1.1.0
   * Added ability to write time stamped results to a given file after the end of a session.
   * Incorrect scores now remove two points (-2) while correct points give one (+1).
+  
 * 1.0.0
   * First proper release
 
