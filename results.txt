@@ -1,0 +1,32 @@
+score: 49
+date: Fri Nov 30 18:55:44 2018
+plus: ( 2 , 100 ), ( 2 , 100 )
+minus: ( 2 , 100 ), ( 2 , 100 )
+product: ( 2 , 12 ), ( 2 , 100 )
+division: ( 2 , 100 ), ( 2 , 12 )
+time_limit: 120
+
+score: 52
+date: Fri Nov 30 18:58:24 2018
+plus: ( 2 , 100 ), ( 2 , 100 )
+minus: ( 2 , 100 ), ( 2 , 100 )
+product: ( 2 , 12 ), ( 2 , 100 )
+division: ( 2 , 100 ), ( 2 , 12 )
+time_limit: 120
+
+score: 37
+date: Fri Nov 30 19:48:08 2018
+plus: ( 2 , 100 ), ( 2 , 100 )
+minus: ( 2 , 100 ), ( 2 , 100 )
+product: ( 2 , 12 ), ( 2 , 100 )
+division: ( 2 , 100 ), ( 2 , 12 )
+time_limit: 120
+
+score: 35
+date: Fri Nov 30 19:50:44 2018
+plus: ( 2 , 100 ), ( 2 , 100 )
+minus: ( 2 , 100 ), ( 2 , 100 )
+product: ( 2 , 12 ), ( 2 , 100 )
+division: ( 2 , 100 ), ( 2 , 12 )
+time_limit: 120
+
