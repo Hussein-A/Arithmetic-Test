@@ -1,7 +1,7 @@
 # Arithmetic-Test
 
 ## Description
-In C++, a program to test and train mental arithmetic in chosen operators (+,-,*,/) and chosen time limit. Operations are currently on integers only. For each operation user may input desired range for operands. For each question operation is chosen randomly then operands randomly based on given range. Default range for each operation is provided.  Score is recorded to a results file (if given by user) and outputed at end of session. 1 mark for correct and -2 marks for incorrect answers.
+In C++, a program to test and train mental arithmetic in chosen operators (+,-,*,/) and chosen time limit. Operations are currently on integers only. For each operation user may input desired range for operands. For each question operation is chosen randomly then operands randomly based on given range. Default range for each operation is provided.  Score is recorded to a results file (if given by user) and outputed at end of session. 1 mark for correct and -2 marks for incorrect answers. Operands may be negative.
 
 
 ## Motivation
@@ -17,6 +17,17 @@ Windows:
 For more specific instructions please click this [link](https://msdn.microsoft.com/en-ca/library/ms235639.aspx).
 
 ## Change Log
+* 1.2.0
+  * In addition to timestamping results all settings are saved to a file called "results.txt". This includes the operations used
+  previously, their associated ranges and the time limit.
+
+  * Settings saved can be used for prompt use without having to input settings manually each time. Only the most recent settings
+  are used.
+  
+  * Answers and operations can now be negative ex. 75+-99 =  ? Chance for a negative operand is (1/5).
+  
+  * Fixed a bug where operands were not following their user inputted ranges.
+
 * 1.1.0
   * Added ability to write time stamped results to a given file after the end of a session.
   * Incorrect scores now remove two points (-2) while correct points give one (+1).
