@@ -198,7 +198,6 @@ istringstream& operator>> (istringstream& iss, vector<op_range>& r) {//read sett
 			r.push_back(op_range(operation::division, range{ lrange_low, lrange_up }, range{ rrange_low, rrange_up }));
 		}
 		else if (temp == "time_limit:") break; //will take care of time limit below
-
 	}
 	return iss;
 }
@@ -227,9 +226,6 @@ int find_latest(vector<string>& data) {//find where the last entry for "score:" 
 	}
 	return -1;
 }
-
-
-
 
 
 //User prompts and input
@@ -273,7 +269,6 @@ vector<range> get_range() {
 	cin.ignore(numeric_limits<streamsize>::max(), '\n'); //clear buffer
 	return user_range;
 }
-
 
 
 bool get_soln(const int& left,const int& right,const operation& op) {//takes the two operands and gets solution from user, returns true or false depending on correctness.
@@ -565,44 +560,55 @@ int main() {
 			cout << "No opertions entered. Closing program. \n";
 			return 0;
 		}
-	
-		time_t start_time{ time(NULL) };//Will be checked against multiple times, ex. after question is answered
-		srand((int)start_time); //Generating random seed for rand() based on current time
 
-		//main loop to randomly pick what operations to give
-		time_t current_time;
-		operation op;
-		int position;
-		while (difftime(time(&current_time),start_time)<time_limit) {
-			position = (rand() % opernums.size()); // Number to choose which ops ex. if all 4 operations then number between 1-4 then pick that position in the vector of opranges
-			op = opernums[position].op(); 
+		while (true) {
+		
 
-			switch (op){
-			case operation::plus:
-				plus_op(opernums[position].lrange(), opernums[position].rrange());
-				break;
+			time_t start_time{ time(NULL) };//Will be checked against multiple times, ex. after question is answered
+			srand((int)start_time); //Generating random seed for rand() based on current time
+			lresult.score = 0; //reset score after each iteration
 
-			case operation::minus:
-				minus_op(opernums[position].lrange(), opernums[position].rrange());
-				break;
+			//main loop to randomly pick what operations to give
+			time_t current_time;
+			operation op;
+			int position;
+			while (difftime(time(&current_time), start_time) < time_limit) {
+				position = (rand() % opernums.size()); // Number to choose which ops ex. if all 4 operations then number between 1-4 then pick that position in the vector of opranges
+				op = opernums[position].op();
 
-			case operation::product:
-				multi_op(opernums[position].lrange(), opernums[position].rrange());
-				break;
+				switch (op) {
+				case operation::plus:
+					plus_op(opernums[position].lrange(), opernums[position].rrange());
+					break;
 
-			case operation::division:
-				div_op(opernums[position].lrange(), opernums[position].rrange());
-				break;
+				case operation::minus:
+					minus_op(opernums[position].lrange(), opernums[position].rrange());
+					break;
+
+				case operation::product:
+					multi_op(opernums[position].lrange(), opernums[position].rrange());
+					break;
+
+				case operation::division:
+					div_op(opernums[position].lrange(), opernums[position].rrange());
+					break;
+				}
 			}
+
+			cout << "Score is: " << lresult.score << "\n";
+			lresult.ltime = time(NULL);
+			if (iofile != "") {//not the empty string means we must've written down someplace to write results to when get_settings was called
+				ofstream ost{ iofile, ios_base::app };
+				if (!ost) error("Cannot open file for writing! File Tampered after entry! \n");
+				ost << lresult << opernums << "time_limit: " << time_limit << "\n\n"; //see << operator overload above for the format of record keeping
+			}
+
+			cout << "Try again? (y) or (n) \n";
+			if (get_yesno()) {}
+			else { break; }
 		}
 		
-		cout << "Score is: " << lresult.score;
-		lresult.ltime = time(NULL);
-		if (iofile != "") {//not the empty string means we must've written down someplace to write results to when get_settings was called
-			ofstream ost{ iofile, ios_base::app };
-			if (!ost) error("Cannot open file for writing! File Tampered after entry! \n");
-			ost << lresult << opernums << "time_limit: " << time_limit << "\n\n"; //see << operator overload above for the format of record keeping
-		}
+
 	}
 	
 	catch (runtime_error& e) {
