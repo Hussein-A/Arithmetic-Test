@@ -17,6 +17,10 @@ Windows:
 For more specific instructions please click this [link](https://msdn.microsoft.com/en-ca/library/ms235639.aspx).
 
 ## Change Log
+* 1.2.1
+  * Added the ability to restart directly after completion of session to avoid tedious restarting of program. Session choices do
+ not need to be re-entered.
+
 * 1.2.0
   * In addition to timestamping results all settings are saved to a file called "results.txt". This includes the operations used
   previously, their associated ranges and the time limit.
