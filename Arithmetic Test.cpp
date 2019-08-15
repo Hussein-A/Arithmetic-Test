@@ -1,6 +1,6 @@
 // Program to test mental arithmetic using given operations with user range and time limit with score.
 #include<iostream>
-#include <fstream>
+#include<fstream>
 #include<sstream>
 #include<string>
 #include<random>
@@ -10,7 +10,7 @@
 
 using namespace std;
 
-//Error handling. Note the following was borrowed from Strouroup's Programming: Principles and Practice using C++
+//Error handling.
 struct Exit : runtime_error {
 	Exit() : runtime_error("Exit") {}
 };
@@ -88,13 +88,12 @@ operation string_to_op(const string& s) {//used when writing to file what op was
 
 class range {//storing range lower bound and upper bound
 public:
-	range() {} //default constructor.
-	range(int x, int y) {//constructor that sorts the input into proper range (lower, upper).
+	range() {}
+	range(int x, int y) {
 		upper = (x >= y) ? x : y;
 		lower = (x >= y) ? y : x;
 	}
 
-	//reading functions.
 	int low() const { return lower; }
 	int up() const { return upper; }
 
@@ -105,7 +104,6 @@ private:
 };
 
 class op_range {//stores operation and associated range for left and right num
-
 public:
 	op_range() {}
 
@@ -127,13 +125,14 @@ private:
 
 
 struct result {//record, keeping the score and current time
-
 	int score{ 0 };
 	time_t ltime{ time(NULL) };
 };
 
 //Global variables
 result lresult; //will be modified by each "operation"_op depending on right or wrong answer
+
+
 
 //Writing to results file/Record keeping
 ostream& operator<<(ostream& ost, result r) {
@@ -204,7 +203,11 @@ istringstream& operator>> (istringstream& iss, vector<op_range>& r) {//read sett
 
 
 //Numerical
-inline int get_rand(const range& range) {//provides a random number from the given range, called often.
+
+int get_rand(const range& range) {//provides a random number from the given range, called often.
+	static random_device r;
+	static mt19937 rng(r());
+	uniform_int_distribution<int> dist;
 	return (rand() % (range.up() + 1 - range.low())) + range.low();
 }
 
@@ -403,7 +406,7 @@ vector<op_range> get_settings(string& iofile, int& time_limit) {
 	cout << "Do you have a previous results file? y or n \n";
 	vector<op_range> opernums;
 
-	char ans = 'n'; //will be used to check if the answer to above is yes no for later
+	char ans = 'n';
 	if (get_yesno()) {
 		ans = 'y';
 		cout << "File name? \n";
@@ -473,7 +476,6 @@ void plus_op(const range& lrange, const range& rrange) {
 			lresult.score++;
 			break;
 		}
-
 		else {
 			cout << "Incorrect (-2). Try again. \n";
 			lresult.score-=2;
@@ -483,7 +485,7 @@ void plus_op(const range& lrange, const range& rrange) {
 }
 
 void minus_op(const range& lrange, const range& rrange) {
-	int left_num = get_rand(lrange); //generating a number in the given range
+	int left_num = get_rand(lrange);
 	int right_num = get_rand(rrange); //Note resulting difference may be negative, this is a deliberate choice.
 
 	if (get_rand(range(1, 2)) == 1) left_num = flip_sign(left_num);//flip a coin to decide which number to have a chance at being negative
@@ -496,7 +498,6 @@ void minus_op(const range& lrange, const range& rrange) {
 			lresult.score++;
 			break;
 		}
-
 		else {
 			cout << "Incorrect (-2). Try again. \n";
 			lresult.score-=2;
@@ -517,7 +518,6 @@ void multi_op(const range& lrange, const range& rrange) {
 			lresult.score++;
 			break;
 		}
-
 		else {
 			cout << "Incorrect (-2). Try again. \n";
 			lresult.score-=2;
