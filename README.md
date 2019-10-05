@@ -17,6 +17,12 @@ Windows:
 For more specific instructions please click this [link](https://msdn.microsoft.com/en-ca/library/ms235639.aspx).
 
 ## Change Log
+* 1.3.0
+  * Completely redesigned codebase to be more inline with modern coding practices and OOP principles.
+  * Operations no longer take in two ranges (one for the left operand and one for the right) but rather just one range for both.
+  * Saving was changed to reflect the above change. (Note if attempting to use old save settings with new redesign it will only take the first range (ie. apply the left operand range for both operands) It is not recommended to do this).
+  * Although highly unlikely to have been an issue users may now find that their random numbers are more "truly" random due to change in RNG (rand() to random_device, mt19937 & uniform_int_distribution).
+
 * 1.2.1
   * Added the ability to restart directly after completion of session to avoid tedious restarting of program. Session choices do
  not need to be re-entered.
