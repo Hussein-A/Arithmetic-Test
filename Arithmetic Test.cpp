@@ -90,10 +90,8 @@ int Division::getSoln() const {
 
 
 ostream& operator<<(ostream& ost, const Test& test) {
-	//data will be stored as follows: ((score), (time)) where score is an integer and time is of the form (Www Mmm dd hh:mm:ss yyyy) followed by a '\n' and terminated with a null character
 
-	char buffer[32];			//since whenever using << on a result it will always be writing to file,
-								// will just take the time at the moment of writing to file with the operator
+	char buffer[32];			
 	struct tm timeinfo;
 	time_t currTime{ time(NULL) };
 	localtime_s(&timeinfo, &currTime);
@@ -154,22 +152,8 @@ bool Test::saveSettingsAndScore() {
 	return true;
 }
 
-	//Question bank manipulation
 
-/* WIP bool Test::removeQuestion(ArithmeticQuestion& targetQuestion) {
-	// I don't imagine this function will be of too much use nonetheless it may prove useful to have
-	for (int i = 0; i < questionBank.size(); ++i)
-		if (*(questionBank)[i] == targetQuestion) {
-			questionBank.erase(questionBank.begin() + i);
-			return true;
-		}
-	return false; //not found
-}*/
-
-
-
-
-int find_latest(vector<string>& data) {//find where the last entry for "score:" is. This will let me read the last entry for settings instead of the first.
+int find_latest(const vector<string>& data) {//find where the last entry for "score:" is. This will let me read the last entry for settings instead of the first.
 	string temp = "";
 	istringstream iss;
 	for (int i = data.size() - 1; i >= 0; --i) {
@@ -299,7 +283,7 @@ bool TestUI::getFileSettings(Test& t) {
 	getline(cin, iofile);
 	t.setSaveFileName(iofile);
 
-	ifstream ist{ iofile };//do a quick check that the given files can be opened and written to then close. This prevents doing the test, having a score but being unable to write it in the end.
+	ifstream ist{ iofile };
 	if (!ist) error("Cannot open file for reading! \n");
 	vector<string> data;
 	string temp;
@@ -314,7 +298,7 @@ bool TestUI::getFileSettings(Test& t) {
 		temp += data[i] + " ";
 	}
 
-	int timeLimit{ 0 };
+	int timeLimit{ 1 };
 	vector<std::unique_ptr<ArithmeticQuestion>> questionBank;
 	istringstream iss{ temp };
 	iss >> questionBank;
