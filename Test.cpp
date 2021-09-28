@@ -1,6 +1,30 @@
 #include"Test.h"
 #include "ErrorHandling.h"
 
+void Test::startTest(const TestUI& menu)
+{
+	//for question selection
+	std::random_device rd;
+	std::mt19937 rng(rd());
+
+	setStartTime();
+
+	std::uniform_int_distribution<int> pickQuestionIndex(0, getQuestionVec().size() - 1);
+	while (!isPastTimeLimit())
+	{
+		ArithmeticQuestion& currQuestion = *(getQuestionVec()[pickQuestionIndex(rng)]);
+		std::cout << currQuestion.getRandQuestion();
+		if (menu.getNum() != currQuestion.getSoln()) {
+			addToScore(currQuestion.incorrectAnsPoints);
+			incorrectAnsMsg(currQuestion.incorrectAnsPoints);
+		}
+		else {
+			addToScore(currQuestion.correctAnsPoints);
+			correctAnsMsg(currQuestion.correctAnsPoints);
+		}
+	}
+}
+
 bool Test::isPastTimeLimit() const {
 	return std::chrono::duration_cast<std::chrono::seconds> (std::chrono::high_resolution_clock::now() - this->startTime).count() > this->getTimeLimitSeconds().count();
 }
@@ -16,7 +40,7 @@ bool Test::saveSettingsAndScore() {
 }
 
 //User prompts and input. TestUI Implementations
-int TestUI::getNum() {//takes number given by user. Used for range, time limit, etc.
+int TestUI::getNum() const {//takes number given by user. Used for range, time limit, etc.
 	int num;
 	std::cin >> num;
 
@@ -36,7 +60,7 @@ int TestUI::getNum() {//takes number given by user. Used for range, time limit, 
 	return num;
 }
 
-std::uniform_int_distribution<int> TestUI::getRange() {
+std::uniform_int_distribution<int> TestUI::getRange() const {
 	//Function to get range for the numbers for operations.
 
 	std::cout << "Operand range? (Two integers). \n";
@@ -48,7 +72,7 @@ std::uniform_int_distribution<int> TestUI::getRange() {
 	return dist;
 }
 
-bool TestUI::getYesNo() {//prompts user for a yes or no
+bool TestUI::getYesNo() const {//prompts user for a yes or no
 	char ans;
 	while (true) {//keep asking for input until correct format is entered
 		std::cin.get(ans);
@@ -74,7 +98,7 @@ bool TestUI::getYesNo() {//prompts user for a yes or no
 	}
 }
 
-void TestUI::getUserOps(Test& t) {
+void TestUI::getUserOps(Test& t) const {
 
 	std::cout << "Addition? 'y' for yes, 'n' for no. \n";
 	if (this->getYesNo()) {
@@ -137,7 +161,7 @@ int find_latest(const std::vector<std::string>& data) {//find where the last ent
 	return -1;
 }
 
-bool TestUI::getFileSettings(Test& t) {
+bool TestUI::getFileSettings(Test& t) const {
 	std::cout << "File name? \n";
 	std::string iofile;
 	getline(std::cin, iofile);

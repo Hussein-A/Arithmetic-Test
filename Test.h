@@ -9,6 +9,17 @@
 #include<chrono>
 #include "Questions.h"
 
+class Test;
+
+class TestUI {
+public:
+	int getNum() const;
+	std::uniform_int_distribution<int> getRange() const;
+	bool getYesNo() const;
+	void getUserOps(Test& t) const;
+	bool getFileSettings(Test& t) const; //assumes a save file exists, returns true if settings from file were copied to test object
+};
+
 class Test {
 private:
 	#define TIMELIMIT 120
@@ -19,6 +30,8 @@ private:
 	std::vector<std::unique_ptr<ArithmeticQuestion>> questionBank;
 
 public:
+	void startTest(const TestUI& menu);
+
 	//time limit manipulation
 	bool isPastTimeLimit() const;
 	std::chrono::seconds getTimeLimitSeconds() const { return this->timeLimitSeconds; }
@@ -45,14 +58,7 @@ public:
 	void incorrectAnsMsg(int points = -1) { std::cout << "Incorrect! " << points << "\n"; }
 };
 
-class TestUI {
-public:
-	int getNum();
-	std::uniform_int_distribution<int> getRange();
-	bool getYesNo();
-	void getUserOps(Test& t);
-	bool getFileSettings(Test& t); //assumes a save file exists, returns true if settings from file were copied to test object
-};
+
 
 std::ostream& operator<<(std::ostream& ost, const Test& test);
 std::istringstream& operator>> (std::istringstream& iss, std::vector<std::unique_ptr<ArithmeticQuestion>>& questionBank);

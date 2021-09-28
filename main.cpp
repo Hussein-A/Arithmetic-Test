@@ -4,7 +4,6 @@
 #include"Questions.h"
 #include"ErrorHandling.h"
 
-
 int main() {
 	try{
 		TestUI menu;
@@ -25,24 +24,10 @@ int main() {
 		//for question selection
 		std::random_device rd;
 		std::mt19937 rng(rd());
-		while (true) {
-			//main loop to randomly pick what operations to give
-			currTest.setStartTime();
-			std::uniform_int_distribution<int> pickVectorIndex(0, currTest.getQuestionVec().size()-1);
-			while (!currTest.isPastTimeLimit()) {
-				ArithmeticQuestion& currQuestion = *(currTest.getQuestionVec()[pickVectorIndex(rng)]);
-				std::cout << currQuestion.getRandQuestion();
-				//cout << currQuestion.getSoln() << "\n" << currQuestion.getRange().a() << "\n";
-				if (menu.getNum() != currQuestion.getSoln()) {
-					currTest.addToScore(currQuestion.incorrectAnsPoints);
-					currTest.incorrectAnsMsg( currQuestion.incorrectAnsPoints );
-				}
-				else {
-					currTest.addToScore(currQuestion.correctAnsPoints);
-					currTest.correctAnsMsg(currQuestion.correctAnsPoints);
-				}
 
-			}
+		//main loop to randomly pick what operations to give
+		while (true) {
+			currTest.startTest(menu);
 
 			std::cout << "Score is: " << currTest.getScore() << "\n";
 			if (!currTest.getSaveFileName().empty()) currTest.saveSettingsAndScore();
