@@ -25,12 +25,10 @@ inline void error(const string& s, int i)
 	os << s << ": " << i;
 	error(os.str());
 }
-//End of Error Handling
 
 //Numerical RNG
 random_device rd;
 mt19937 rng(rd());
-
 
 //ArithmeticQuestion Implementations
 bool ArithmeticQuestion::operator==(const ArithmeticQuestion& q) const {
@@ -87,7 +85,6 @@ std::string Division::getRandQuestion() {
 int Division::getSoln() const {
 	return this->lastUsedOperandX / this->lastUsedOperandY;
 }
-
 
 ostream& operator<<(ostream& ost, const Test& test) {
 
@@ -199,7 +196,6 @@ std::uniform_int_distribution<int> TestUI::getRange() {
 	cin.ignore(numeric_limits<streamsize>::max(), '\n');
 	return dist;
 }
-
 
 bool TestUI::getYesNo() {//prompts user for a yes or no
 	char ans;
@@ -324,8 +320,6 @@ bool TestUI::getFileSettings(Test& t) {
 	return true;
 }
 
-
-
 int main() {
 	try{
 		TestUI menu;
@@ -380,4 +374,3 @@ int main() {
 		return 2;
 	}
 }
-
