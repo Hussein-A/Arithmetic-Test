@@ -3,6 +3,7 @@
 #include"Test.h"
 #include"Questions.h"
 #include"ErrorHandling.h"
+#include<thread>
 
 int main() {
 	try{
@@ -25,17 +26,12 @@ int main() {
 		std::random_device rd;
 		std::mt19937 rng(rd());
 
-		//main loop to randomly pick what operations to give
-		while (true) {
-			currTest.startTest(menu);
+		std::thread test{ &Test::startTest, &currTest, menu };
+		std::this_thread::sleep_for(currTest.getTimeLimitSeconds());
+		std::cout << "Score is: " << currTest.getScore() << "\n";
+		if (!currTest.getSaveFileName().empty()) currTest.saveSettingsAndScore();
 
-			std::cout << "Score is: " << currTest.getScore() << "\n";
-			if (!currTest.getSaveFileName().empty()) currTest.saveSettingsAndScore();
-
-			std::cout << "Try again? (y) or (n) \n";
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //seems to be an issue where a newline is entered here. This is a temp fix for now.
-			if (!menu.getYesNo()) break;
-		}
+		std::terminate();
 		
 	}
 	
