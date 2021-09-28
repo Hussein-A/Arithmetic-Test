@@ -15,6 +15,175 @@ bool Test::saveSettingsAndScore() {
 	return true;
 }
 
+//User prompts and input. TestUI Implementations
+int TestUI::getNum() {//takes number given by user. Used for range, time limit, etc.
+	int num;
+	std::cin >> num;
+
+	while (!std::cin) {//std::cin must be good() and num has a value that is reasonable ie. >0
+							//keep asking until both are satisfied
+		if (std::cin.bad()) error("Input to num is bad(). \n");
+		else if (std::cin.fail()) {
+			std::cout << "Non-numerical input entered, try again. \n";
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); //clear buffer
+			num = -1;
+		}
+		else  error("Unknown error occurred at get_num().");
+		std::cin >> num;
+	}
+
+	return num;
+}
+
+std::uniform_int_distribution<int> TestUI::getRange() {
+	//Function to get range for the numbers for operations.
+
+	std::cout << "Operand range? (Two integers). \n";
+	int min = this->getNum();
+	int max = this->getNum();
+	if (max < min) std::swap(max, min);
+	std::uniform_int_distribution<int>  dist(min, max);
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	return dist;
+}
+
+bool TestUI::getYesNo() {//prompts user for a yes or no
+	char ans;
+	while (true) {//keep asking for input until correct format is entered
+		std::cin.get(ans);
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		if (isalpha(ans))
+		{
+			switch (tolower(ans))
+			{
+			case 'y':
+				return true;
+				break;
+			case 'n':
+				return false;
+				break;
+			default:
+				std::cout << "Sorry incorrect alphabetic character entered, please try again." << std::endl;
+				break;
+			}
+		}
+		else {
+			std::cout << "Sorry non-alphabetical character entered, please try again." << std::endl;
+		}
+	}
+}
+
+void TestUI::getUserOps(Test& t) {
+
+	std::cout << "Addition? 'y' for yes, 'n' for no. \n";
+	if (this->getYesNo()) {
+		std::unique_ptr<ArithmeticQuestion> addUptr = std::make_unique<Addition>();
+		std::cout << "Default range for '+'? Min: " << addUptr->getRange().a() << " Max: " << addUptr->getRange().b() << "\n";
+		if (!this->getYesNo()) {
+			auto newRange = this->getRange();
+			addUptr->setRange(newRange.a(), newRange.b());
+		}
+		t.addQuestion(addUptr);
+	}
+
+	std::cout << "Subtraction? 'y' for yes, 'n' for no. \n";
+	if (this->getYesNo()) {
+		std::unique_ptr<ArithmeticQuestion> subUptr = std::make_unique<Subtraction>();
+		std::cout << "Default range for '-'? Min: " << subUptr->getRange().a() << " Max: " << subUptr->getRange().b() << "\n";
+		if (!this->getYesNo()) {
+			auto newRange = this->getRange();
+			subUptr->setRange(newRange.a(), newRange.b());
+		}
+		t.addQuestion(subUptr);
+	}
+
+	std::cout << "Multiplication? 'y' for yes, 'n' for no. \n";
+	if (this->getYesNo()) {
+		std::unique_ptr<ArithmeticQuestion> multiUptr = std::make_unique<Multiplication>();
+		std::cout << "Default range for '*'? Min: " << multiUptr->getRange().a() << " Max: " << multiUptr->getRange().b() << "\n";
+		if (!this->getYesNo()) {
+			auto newRange = this->getRange();
+			multiUptr->setRange(newRange.a(), newRange.b());
+		}
+		t.addQuestion(multiUptr);
+	}
+
+	std::cout << "Division? 'y' for yes, 'n' for no. \n";
+	if (this->getYesNo()) {
+		std::unique_ptr<ArithmeticQuestion> divUptr = std::make_unique<Division>();
+		std::cout << "Default range for '/'? Min: " << divUptr->getRange().a() << " Max: " << divUptr->getRange().b() << "\n";
+		if (!this->getYesNo()) {
+			auto newRange = this->getRange();
+			divUptr->setRange(newRange.a(), newRange.b());
+		}
+		t.addQuestion(divUptr);
+	}
+
+	std::cout << "Time limit (seconds)? \n";
+	t.setTimeLimitSeconds(this->getNum());
+}
+
+int find_latest(const std::vector<std::string>& data) {//find where the last entry for "score:" is. This will let me read the last entry for settings instead of the first.
+	std::string temp = "";
+	std::istringstream iss;
+	for (int i = data.size() - 1; i >= 0; --i) {
+		iss.str(data[i]);
+		iss.clear();                 // clear fail and eof bits
+		iss.seekg(0, std::ios::beg);
+		iss >> temp; //only bother reading the first word, just looking for the position of the occurence of "score:" to know where the latest settings is in file
+		if (temp == "score:") return i;
+	}
+	return -1;
+}
+
+bool TestUI::getFileSettings(Test& t) {
+	std::cout << "File name? \n";
+	std::string iofile;
+	getline(std::cin, iofile);
+	t.setSaveFileName(iofile);
+
+	std::ifstream ist{ iofile };
+	if (!ist) error("Cannot open file for reading! \n");
+	std::vector<std::string> data;
+	std::string temp;
+
+	while (!ist.eof()) {//partitioning the results file into each nonempty line from the beginning.
+		getline(ist, temp);
+		data.push_back(temp);
+	}
+	temp = "";
+
+	for (int i = find_latest(data); i < data.size(); ++i) {
+		temp += data[i] + " ";
+	}
+
+	int timeLimit{ 1 };
+	std::vector<std::unique_ptr<ArithmeticQuestion>> questionBank;
+	std::istringstream iss{ temp };
+	iss >> questionBank;
+	iss.str(data[data.size() - 3]);//jump to the line that is of the form "time_limit: xx" where xx is some integer. Due to formatting this is the third last line.
+	iss >> temp >> timeLimit;
+
+	std::cout << "The following settings were found: \n";
+	for (std::unique_ptr<ArithmeticQuestion>& q : questionBank) {
+		std::cout << q->getOp() << " Range: " << q->getRange().a() << '-' << q->getRange().b() << '\n';
+	}
+	std::cout << "Time limit: " << timeLimit << "\n"
+		<< "Do you want to proceed with these settings? \n";
+	if (!this->getYesNo()) {
+		return false;
+	}
+	else {
+		t.setQuestionBank(questionBank);
+	}
+
+	std::ofstream ost{ iofile, std::ios_base::app };
+	if (!ost) error("Cannot open file for writing! \n");
+
+	return true;
+}
+
 std::ostream& operator<<(std::ostream& ost, const Test& test) {
 
 	char buffer[32];
