@@ -53,3 +53,6 @@ public:
 	void getUserOps(Test& t);
 	bool getFileSettings(Test& t); //assumes a save file exists, returns true if settings from file were copied to test object
 };
+
+std::ostream& operator<<(std::ostream& ost, const Test& test);
+std::istringstream& operator>> (std::istringstream& iss, std::vector<std::unique_ptr<ArithmeticQuestion>>& questionBank);

@@ -2,30 +2,9 @@
 #include<chrono>
 #include"Test.h"
 #include"Questions.h"
+#include"ErrorHandling.h"
 
 using namespace std;
-
-//Error handling.
-struct Exit : runtime_error {
-	Exit() : runtime_error("Exit") {}
-};
-
-inline void error(const string& s)
-{
-	throw runtime_error(s);
-}
-
-inline void error(const string& s, const string& s2)
-{
-	error(s + s2);
-}
-
-inline void error(const string& s, int i)
-{
-	ostringstream os;
-	os << s << ": " << i;
-	error(os.str());
-}
 
 //Numerical RNG
 random_device rd;
@@ -86,70 +65,6 @@ std::string Division::getRandQuestion() {
 int Division::getSoln() const {
 	return this->lastUsedOperandX / this->lastUsedOperandY;
 }
-
-ostream& operator<<(ostream& ost, const Test& test) {
-
-	char buffer[32];			
-	struct tm timeinfo;
-	time_t currTime{ time(NULL) };
-	localtime_s(&timeinfo, &currTime);
-	asctime_s(buffer, 32, &timeinfo);
-	ost << "score: " << test.getScore() << '\n' << "date: " << buffer;
-	for (const std::unique_ptr<ArithmeticQuestion>& q : test.getQuestionVec()) {
-		ost << q->getOp() << ": " << "( " << q->getRange().a() << " , " << q->getRange().b() << " )" << '\n';
-	}
-	ost << "time_limit: " << test.getTimeLimitSeconds().count() << "\n\n";
-	return ost;
-
-}
-
-istringstream& operator>> (istringstream& iss, vector<std::unique_ptr<ArithmeticQuestion>>& questionBank) {//read settings from file and use settings if requested
-
-	while (!iss.eof()) {
-		string temp;
-		iss >> temp;
-
-		int min{ 0 };
-		int max{ 0 };
-		char ch;
-
-		if (temp == "Addition:") {//read the left and right ranges.
-			iss >> ch >> min >> ch >> max;
-			questionBank.push_back(make_unique<Addition>(min, max));
-		}
-		else if (temp == "Subtraction:") {
-			iss >> ch >> min >> ch >> max;
-			questionBank.push_back(std::make_unique<Subtraction>(min, max));
-		}
-		else if (temp == "Multiplication:") {
-			iss >> ch >> min >> ch >> max;
-			questionBank.push_back(std::make_unique<Multiplication>(min, max));
-		}
-		else if (temp == "Division:") {
-			iss >> ch >> min >> ch >> max;
-			questionBank.push_back(std::make_unique<Division>(min, max));
-		}
-		else if (temp == "time_limit:") break; //will take care of time limit below
-	}
-	return iss;
-}
-
-//Test Class Implementations
-	//Time limit Manipulations
-bool Test::isPastTimeLimit() const {
-	return std::chrono::duration_cast<chrono::seconds> (std::chrono::high_resolution_clock::now() - this->startTime).count() > this->getTimeLimitSeconds().count();
-}
-
-	//File saving settings
-bool Test::saveSettingsAndScore() {
-	if (this->getSaveFileName().empty()) return false;
-	
-	ofstream ost{ this->getSaveFileName(), ios_base::app };
-	if (!ost) error("Cannot open file for writing! File Tampered after entry! \n");
-	ost << *this; //see << operator overload above for the format of record keeping
-	return true;
-}
-
 
 int find_latest(const vector<string>& data) {//find where the last entry for "score:" is. This will let me read the last entry for settings instead of the first.
 	string temp = "";
