@@ -1,6 +1,7 @@
 // Program to test mental arithmetic using given operations with user range and time limit with score.
 #include<chrono>
-#include"Arithmetic Test.h"
+#include"Test.h"
+#include"Questions.h"
 
 using namespace std;
 
