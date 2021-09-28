@@ -13,7 +13,9 @@ protected:
 	std::string operation = "Undefined"; //used when writing to file which op was used
 	std::uniform_int_distribution<int> range{ 0,1 };
 	int lastUsedOperandX = 0;
-	int lastUsedOperandY = 0;
+	int lastUsedOperandY = 0;//for question selection
+	std::random_device rd;
+	std::mt19937 rng{ rd() };
 
 	ArithmeticQuestion(int correct, int incorrect) : correctAnsPoints(correct), incorrectAnsPoints(incorrect) {}
 
